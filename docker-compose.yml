@@ -1,0 +1,34 @@
+version: '3'
+
+networks:
+  microservices-network:
+    driver: monolith-network
+
+services:
+  mono-corp-mgmt:
+    build: ./mono-corp-mgmt
+    image: mono:0.0.1
+    container_name: monolith
+    ports:
+      - "3000:3000"
+    # networks:
+    #   - monolith-network
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+
+  mongodb:
+    image: mongo
+    command: 'mongod --port 27017'
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./database:/data/db
+    ports:
+      - 27017:27017
+    # networks:
+    #   - monolith-network
+    restart: unless-stopped
